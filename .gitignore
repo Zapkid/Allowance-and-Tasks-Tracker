@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+
+# Streamlit
+.streamlit/
+
+# Data files
+data/*.json
+
+# OS
+.DS_Store
