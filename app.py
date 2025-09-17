@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 import json
 from pathlib import Path
@@ -45,8 +44,12 @@ data_file = Path("data.json")
 try:
     with data_file.open("r") as f:
         data = json.load(f)
+    # Validate weekly_allowance
+    if "weekly_allowance" not in data or not isinstance(data["weekly_allowance"], (int, float)):
+        st.warning("Invalid weekly allowance in data. Resetting to default ($5.00).")
+        data["weekly_allowance"] = 5.0
 except (FileNotFoundError, json.JSONDecodeError):
-    st.warning("Oops! No data found. Starting fresh! 😊")
+    st.warning("Oops! No data found or file is broken. Starting fresh! 😊")
     data = {
         "tasks": [],  # list of {"id": int, "name": str, "value": float}
         "next_id": 1,
@@ -81,7 +84,13 @@ st.title("🎉 Kids' Allowance Adventure! 🤑")
 with st.sidebar:
     st.header("⚙️ Grown-Up Settings")
     st.markdown("### Set Weekly Allowance")
-    allowance = st.number_input("Weekly Allowance ($)", min_value=0.0, step=1.0, value=data["weekly_allowance"])
+    # Use data["weekly_allowance"] with a fallback to 5.0
+    allowance = st.number_input(
+        "Weekly Allowance ($)",
+        min_value=0.0,
+        step=1.0,
+        value=float(data.get("weekly_allowance", 5.0))  # Ensure float value
+    )
     if st.button("Save Allowance"):
         data["weekly_allowance"] = allowance
         st.success("Allowance updated! 💰")
